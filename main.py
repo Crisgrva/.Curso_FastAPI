@@ -3,7 +3,7 @@ from typing import Optional
 from enum import Enum
 
 # Pydantic
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 
 # FastApi
 from fastapi import FastAPI
@@ -23,9 +23,30 @@ class HairColor(Enum):
 
 
 class Location(BaseModel):
-    city: str
-    state: str
-    country: str
+    city: str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+    )
+    state: str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+    )
+    country: str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+    )
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "city": "Puerto Nare",
+                "state": "Antioquia",
+                "country": "Colombia"
+            }
+        }
 
 
 class Person(BaseModel):
@@ -44,9 +65,26 @@ class Person(BaseModel):
         gt=0,
         le=115
     )
+    email: EmailStr = Field(...)
 
     hair_color: Optional[HairColor] = Field(default=None)
     is_married: Optional[bool] = Field(default=None)
+
+    class Config:
+        """
+        This class fill fields automatically
+        in SwaggerUI for Parent class, in this example
+        For Class Person
+        """
+        schema_extra = {
+            "example": {
+                "first_name": "Cristian",
+                "last_name": "Granada",
+                "age": 22,
+                "hair_color": "black",
+                "is_married": False
+            },
+        }
 
 
 @app.get("/")
@@ -103,8 +141,9 @@ def update_person(
         gt=0
     ),
     person: Person = Body(...),
-    location: Location = Body(...)
+    # location: Location = Body(...)
 ):
-    results = person.dict()
-    results.update(location.dict())
-    return results
+    # results = person.dict()
+    # results.update(location.dict())
+    # return results
+    return person
