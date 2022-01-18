@@ -65,8 +65,7 @@ class Person(BaseModel):
         gt=0,
         le=115
     )
-    email: EmailStr = Field(...)
-
+    email: Optional[EmailStr] = Field(default=None)
     hair_color: Optional[HairColor] = Field(default=None)
     is_married: Optional[bool] = Field(default=None)
 
@@ -81,6 +80,7 @@ class Person(BaseModel):
                 "first_name": "Cristian",
                 "last_name": "Granada",
                 "age": 22,
+                "email": "crstngranada@gmail.com",
                 "hair_color": "black",
                 "is_married": False
             },
@@ -107,12 +107,14 @@ def show_person(
         min_length=1,
         max_length=50,
         title="Person name",
-        description="This is the person name. It's between 1 and 50 characteres"
+        description="This is the person name. It's between 1 and 50 characteres",
+        example="Cristian"
     ),
     age: str = Query(
         ...,
         title="Person Age",
-        description="This is the person age. It's required"
+        description="This is the person age. It's required",
+        example=22
     )
 ):
     return {name: age}
@@ -126,6 +128,7 @@ def show_person(
         gt=0,
         title="Person id",
         description="This is the person id. It's required",
+        example=123
     )
 ):
     return {person_id: "It exists!"}
@@ -138,7 +141,8 @@ def update_person(
         ...,
         title="Person ID",
         description="This is the Person ID",
-        gt=0
+        gt=0,
+        example=123
     ),
     person: Person = Body(...),
     # location: Location = Body(...)
